@@ -21,4 +21,29 @@ router
     return res.send("PATCH request to http://localhost:3000/users");
   });
 
+router.route("/login").post(async (req, res) => {
+  const { token } = req.body;
+  try {
+    const user = await usersData.verifyLogin(token);
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+router.route("/signup").post(async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
+  try {
+    const user = await usersData.createUser(
+      firstName,
+      lastName,
+      email,
+      password
+    );
+    return res.status(201).json(user);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 export default router;
