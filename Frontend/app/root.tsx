@@ -9,6 +9,7 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import LoginPage from "./routes/login";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -41,8 +42,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Outfit Oracle" },
+    { name: "description", content: "Welcome to React Router!" },
+  ];
+}
+
 export default function App() {
-  return <Outlet />;
+  return <LoginPage />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
