@@ -6,10 +6,14 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import { Routes, Route } from "react-router-dom";
 
-import type { Route } from "./+types/root";
 import "./app.css";
 import LoginPage from "./routes/login";
+import Sidebar from "./components/sidebar";
+import Dashboard from "./routes/dashboard";
+import type { Route } from "./+types/root";
+import Wardrobe from "./routes/wardrobe";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -50,7 +54,23 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function App() {
-  return <LoginPage />;
+  // return <LoginPage />;
+  // return (
+  //   <div className="flex">
+  //     <Sidebar />
+  //     <Dashboard />
+  //   </div>
+  // );
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/wardrobe" element={<Wardrobe />} />
+      </Routes>
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
