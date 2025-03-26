@@ -6,6 +6,7 @@ import {
   checkIsProperFirstOrLastName,
   validateEmail,
   checkIsProperPassword,
+  validateId,
 } from "../helpers.js";
 
 const createUser = async (firstName, lastName, email, password) => {
@@ -49,6 +50,35 @@ const createUser = async (firstName, lastName, email, password) => {
   }
 };
 
+// Function to get all users
+const getAllUsers = async () => {
+  try {
+    const userCollection = await users();
+    const allUsers = await userCollection.find({}).toArray();
+    if (!allUsers || allUsers.length === 0) {
+      throw new Error("No users found.");
+    }
+    return allUsers;
+  } catch (error) {
+    throw new Error(`Error fetching all users: ${error.message}`);
+  }
+};
+
+// Function to get a user by ID
+const getUserById = async (userId) => {
+  userId = validateId(userId);
+  try {
+    const userCollection = await users();
+    const user = await userCollection.findOne({ _id: new ObjectId(userId) });
+    if (!user) {
+      throw new Error(`No user found with ID ${userId}.`);
+    }
+    return user;
+  } catch (error) {
+    throw new Error(`Error fetching user by ID: ${error.message}`);
+  }
+};
+
 const verifyLogin = async (token) => {
   const decodedToken = await admin.auth().verifyIdToken(token);
   const email = decodedToken.email;
@@ -62,4 +92,4 @@ const verifyLogin = async (token) => {
   };
 };
 
-export default { createUser, verifyLogin };
+export default { createUser, verifyLogin, getAllUsers, getUserById };

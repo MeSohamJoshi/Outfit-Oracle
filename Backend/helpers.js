@@ -66,3 +66,37 @@ export const checkIsProperPassword = (password) => {
 
   return password;
 };
+
+export const validateId = (id) => {
+  isInputProvided(id, "id");
+  id = checkIsProperString(id, "id");
+
+  if (!ObjectId.isValid(id)) throw new Error(`Error: Invalid object Id`);
+
+  return id;
+};
+
+export const ClothingCategory = {
+  TOPS: ["T-Shirt", "Shirt", "Sweater", "Hoodie", "Jacket"],
+  BOTTOMS: ["Pants", "Jeans", "Shorts", "Skirt"],
+  DRESSES: ["Dress"],
+  OUTERWEAR: ["Jacket", "Coat"],
+  FOOTWEAR: ["Sneakers", "Boots", "Sandals"],
+  ACCESSORIES: ["Hat", "Scarf", "Belt", "Bag"],
+  UNDERWEAR: ["Underwear", "Socks"],
+  SWIMWEAR: ["Swimsuit"],
+  SLEEPWEAR: ["Pajamas"],
+  ATHLETIC: ["Sports Bra", "Leggings", "Shorts", "Tank Top"],
+};
+
+export const validateCategory = (category) => {
+  const allCategories = Object.values(ClothingCategory).flat();
+  if (!allCategories.includes(category)) {
+    throw new Error(
+      `Invalid category: ${category}. Please choose from: ${allCategories.join(
+        ", "
+      )}`
+    );
+  }
+  return true;
+};

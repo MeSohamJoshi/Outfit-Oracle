@@ -1,11 +1,11 @@
 import express from "express";
 import admin from "firebase-admin";
 import dotenv from "dotenv";
-
+import cors from "cors";
 import configRoutesFunction from "./routes/index.js";
 dotenv.config();
 const app = express();
-
+app.use(cors());
 const serviceAccount = {
   type: "service_account",
   project_id: process.env.FIREBASE_PROJECT_ID,
