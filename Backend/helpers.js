@@ -98,5 +98,5 @@ export const validateCategory = (category) => {
       )}`
     );
   }
-  return true;
+  return category;
 };

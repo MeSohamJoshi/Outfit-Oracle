@@ -67,7 +67,7 @@ const getWardrobeItemById = async (itemId) => {
 // Function to update a wardrobe item
 const updateWardrobeItem = async (itemId, category, name, image) => {
   itemId = validateId(itemId);
-  if (category) category = isValidCategory(category);
+  if (category) category = validateCategory(category);
   if (name) name = checkIsProperString(name, "Name");
 
   try {
