@@ -3,6 +3,4 @@ Backend/package-lock.json
 **/node_modules/
 # Ignore all .env files
 .env
-# Include .env files in Backend and Frontend folders
-!Frontend/.env
-!Backend/.env
+
