@@ -1,7 +1,22 @@
 import { ObjectId } from "mongodb";
 import moment from "moment";
-
+import axios from "axios";
 import validator from "validator";
+
+export const getWeatherData = async (city) => {
+  try {
+    const response = await axios.get(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.OPENWEATHER_API_KEY}&units=metric`
+    );
+    return {
+      temp: response.data.main.temp,
+      condition: response.data.weather[0].main,
+      humidity: response.data.main.humidity,
+    };
+  } catch (error) {
+    throw new Error(`Weather API error: ${error.message}`);
+  }
+};
 
 export const checkIsProperFirstOrLastName = (name, nameVar) => {
   isInputProvided(name, nameVar);
