@@ -7,6 +7,7 @@ import Wardrobe from "./Components/Wardrobe.jsx";
 import fbconfig from "./firebase/firebaseConfig.js";
 import { initializeApp } from "firebase/app";
 import { AuthProvider } from "./Context/AuthContext.jsx";
+import OutfitsPage from "./Components/Outfits";
 
 const app = initializeApp(fbconfig);
 
@@ -20,6 +21,7 @@ function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/outfits-ai" element={<OutfitsPage />} />
             </Routes>
             </AuthProvider>
         </Router>

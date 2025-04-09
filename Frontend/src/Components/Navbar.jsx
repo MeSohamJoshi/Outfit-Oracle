@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '../Context/AuthContext';
-import {useNavigate} from "react-router-dom";
+// import {useNavigate} from "react-router-dom";
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
     const { authState, logout } = useAuth();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const navLinks = [
         { name: 'Home', path: '/' },
-        { name: 'Smart Wardrobe', path: '/wardrobe' },
-        { name: 'AI Styling', path: '/ai-styling' },
-        { name: 'Event Fashion', path: '/event-fashion' },
+        { name: 'Wardrobe', path: '/wardrobe' },
+        { name: 'Outfits', path: '/outfits-ai' },
+        // { name: 'Event Fashion', path: '/event-fashion' },
         { name: 'History', path: '/history' }
     ];
 
