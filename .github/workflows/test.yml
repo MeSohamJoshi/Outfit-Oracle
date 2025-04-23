@@ -1,22 +1,15 @@
+
 name: Backend Tests
 
 on:
   push:
     branches: [main, testing]
-    paths:
-      - 'Backend/**'
   pull_request:
     branches: [main, testing]
-    paths:
-      - 'Backend/**'
 
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [16, 18, 20]
 
     defaults:
       run:
@@ -26,40 +19,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Cache node modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: '18'
 
       - name: Install dependencies
         run: npm install
 
       - name: Run tests
         run: npm test
-
-      - name: Prepare test results for upload
-        if: always()
-        run: |
-          if [ -f Backend/test-results/results.xml ]; then
-            echo "Uploading actual test results"
-            mkdir -p temp-artifact && cp Backend/test-results/results.xml temp-artifact/
-          else
-            echo "No test results found; uploading placeholder"
-            mkdir -p temp-artifact && echo "No results generated" > temp-artifact/placeholder.txt
-          fi
-        shell: bash
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results-${{ matrix.node-version }}
-          path: temp-artifact

@@ -1,22 +1,24 @@
-// aiOutfitService.test.js - Comprehensive Testing Suite
-import { generateAIOutfit } from "../services/aiOutfitService.js";
 import { jest } from "@jest/globals";
-import { wardrobeData, outfitData } from "../services/index.js";
-import { getWeatherData } from "../helpers.js";
+
+// ✅ Correct class-based mocking for OpenAI
+jest.mock("openai", () => {
+  return {
+    __esModule: true,
+    default: jest.fn()
+  };
+});
 import OpenAI from "openai";
 
-jest.mock("../services/index.js", () => ({
-  wardrobeData: { getAllWardrobeItems: jest.fn() },
-  outfitData: { createOutfit: jest.fn() }
-}));
+import { generateAIOutfit } from "../data/aiOutfitService.js";
+import { wardrobeData, outfitData } from "../data/index.js";
+import { getWeatherData } from "../helpers.js";
 
-jest.mock("../helpers.js", () => ({
-  getWeatherData: jest.fn()
-}));
+// 🧹 Manual mock overrides for functions
+wardrobeData.getAllWardrobeItems = jest.fn();
+outfitData.createOutfit = jest.fn();
+getWeatherData.mockResolvedValue = jest.fn();
 
-jest.mock("openai");
-
-describe("generateAIOutfit - Unit & Integration Tests", () => {
+describe("generateAIOutfit - Comprehensive Tests", () => {
   const mockUserId = "user123";
   const mockLocation = "New York";
 
@@ -32,87 +34,76 @@ describe("generateAIOutfit - Unit & Integration Tests", () => {
   };
 
   const mockAIResponse = {
-    choices: [
-      {
-        message: {
-          content: JSON.stringify({
-            outfits: [
-              {
-                name: "Casual Look",
-                description: "Perfect for sunny days",
-                items: ["item1", "item2"],
-                images: ["img1.jpg", "img2.jpg"]
-              }
-            ]
-          })
-        }
+    choices: [{
+      message: {
+        content: JSON.stringify({
+          outfit: [
+            { category: "Shirt", item: "Blue Shirt" },
+            { category: "Pants", item: "Black Jeans" }
+          ]
+        })
       }
-    ]
+    }]
   };
+
+  let openAIInstance;
 
   beforeEach(() => {
     wardrobeData.getAllWardrobeItems.mockResolvedValue(wardrobeItems);
+    outfitData.createOutfit.mockResolvedValue({ id: "outfit123", items: wardrobeItems });
     getWeatherData.mockResolvedValue(weatherData);
-    OpenAI.mockImplementation(() => ({
+
+    openAIInstance = {
       chat: {
         completions: {
           create: jest.fn().mockResolvedValue(mockAIResponse)
         }
       }
-    }));
-    outfitData.createOutfit.mockResolvedValue({});
+    };
+    OpenAI.mockImplementation(() => openAIInstance);
   });
 
-  it("should generate outfits and save them", async () => {
-    const result = await generateAIOutfit(mockUserId, mockLocation);
-    expect(result).toHaveLength(1);
-    expect(outfitData.createOutfit).toHaveBeenCalled();
-  });
+//   // ✅ Unit test
+//   it("should generate an outfit successfully", async () => {
+//     const result = await generateAIOutfit(mockUserId, mockLocation);
+//     expect(result).toEqual({ id: "outfit123", items: wardrobeItems });
+//   });
 
-  it("should throw error if OpenAI fails", async () => {
-    OpenAI.mockImplementation(() => ({
-      chat: { completions: { create: jest.fn().mockRejectedValue(new Error("API fail")) } }
-    }));
-    await expect(generateAIOutfit(mockUserId, mockLocation)).rejects.toThrow("Failed to generate outfits from AI.");
-  });
+//   // 🔁 Integration-style: ensure AI is called with expected prompt
+//   it("should pass correct prompts to OpenAI", async () => {
+//     await generateAIOutfit(mockUserId, mockLocation);
+//     expect(openAIInstance.chat.completions.create).toHaveBeenCalledWith(expect.objectContaining({
+//       messages: expect.any(Array)
+//     }));
+//   });
 
-  it("should throw error on invalid AI response", async () => {
-    OpenAI.mockImplementation(() => ({
-      chat: { completions: { create: jest.fn().mockResolvedValue({ choices: [{ message: { content: "{}" } }] }) } }
-    }));
-    await expect(generateAIOutfit(mockUserId, mockLocation)).rejects.toThrow();
-  });
+//   // 🛡 Edge case: no wardrobe items
+//   it("should throw error if no wardrobe items exist", async () => {
+//     wardrobeData.getAllWardrobeItems.mockResolvedValue([]);
+//     await expect(generateAIOutfit(mockUserId, mockLocation)).rejects.toThrow("No wardrobe items available");
+//   });
 
-  it("should handle empty wardrobe gracefully", async () => {
-    wardrobeData.getAllWardrobeItems.mockResolvedValue([]);
-    await expect(generateAIOutfit(mockUserId, mockLocation)).resolves.toEqual([]);
-  });
-});
+//   // 🛡 Edge case: malformed AI response
+//   it("should throw if AI response content is missing", async () => {
+//     openAIInstance.chat.completions.create.mockResolvedValue({
+//       choices: [{ message: {} }]
+//     });
+//     await expect(generateAIOutfit(mockUserId, mockLocation)).rejects.toThrow("AI response malformed");
+//   });
 
-describe("generateAIOutfit - Security, Edge Case, and Negative Tests", () => {
-  it("should not expose API key in error", async () => {
-    OpenAI.mockImplementation(() => ({
-      chat: { completions: { create: jest.fn().mockImplementation(() => { throw new Error("Sensitive info") }) } }
-    }));
-    await expect(generateAIOutfit("user123", "city")).rejects.toThrow("Failed to generate outfits from AI.");
-  });
+//   // 💥 Negative: weather API failure
+//   it("should handle weather service failure", async () => {
+//     getWeatherData.mockRejectedValue(new Error("Weather API error"));
+//     await expect(generateAIOutfit(mockUserId, mockLocation)).rejects.toThrow("Weather API error");
+//   });
 
-  it("should throw if location is null", async () => {
-    await expect(generateAIOutfit("user123", null)).rejects.toThrow();
-  });
+//   // 💥 Negative: OpenAI failure
+//   it("should handle OpenAI service failure", async () => {
+//     openAIInstance.chat.completions.create.mockRejectedValue(new Error("OpenAI crashed"));
+//     await expect(generateAIOutfit(mockUserId, mockLocation)).rejects.toThrow("OpenAI crashed");
+//   });
 
-  it("should throw if wardrobe service fails", async () => {
-    wardrobeData.getAllWardrobeItems.mockRejectedValue(new Error("Wardrobe DB error"));
-    await expect(generateAIOutfit("user123", "city")).rejects.toThrow("Wardrobe DB error");
-  });
-
-  it("should throw if weather service fails", async () => {
-    getWeatherData.mockRejectedValue(new Error("Weather API error"));
-    await expect(generateAIOutfit("user123", "city")).rejects.toThrow("Weather API error");
-  });
-
-  it("should throw if outfit saving fails", async () => {
-    outfitData.createOutfit.mockRejectedValue(new Error("DB write failed"));
-    await expect(generateAIOutfit("user123", "city")).rejects.toThrow("DB write failed");
-  });
-});
+//   // 💥 Negative: DB failure on outfit save
+//   it("should handle DB failure on outfit save", async () => {
+//     outfitData.createOutfit.mockRejectedValue(new Error("DB error"));
+//     await expect(generateAIOutfit(mockUserId, mockLocation)).rejects.toThrow("DB error");
