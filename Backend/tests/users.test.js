@@ -72,7 +72,7 @@ describe("User Data Functions", () => {
 
 
 
-  
+
   test("createUser - should throw error on invalid email", async () => {
     userData.createUser.mockRejectedValue(new Error("Invalid email format"));
 
@@ -93,3 +93,4 @@ describe("User Data Functions", () => {
     await expect(userData.verifyLogin("badToken")).rejects.toThrow("Invalid token");
   });
 });
+// test trigger
