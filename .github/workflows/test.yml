@@ -3,12 +3,20 @@ name: Backend Tests
 on:
   push:
     branches: [main, testing]
+    paths:
+      - 'Backend/**'
   pull_request:
     branches: [main, testing]
+    paths:
+      - 'Backend/**'
 
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16, 18, 20]
 
     defaults:
       run:
@@ -18,13 +26,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm install
 
       - name: Run tests
         run: npm test
+
+      - name: Upload test results (optional)
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-${{ matrix.node-version }}
+          path: Backend/test-results
