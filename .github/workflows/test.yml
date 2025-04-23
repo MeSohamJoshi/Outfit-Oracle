@@ -44,13 +44,22 @@ jobs:
 
       - name: Run tests
         run: npm test
-        
-      - name: Upload test results (optional)
+
+      - name: Prepare test results for upload
+        if: always()
+        run: |
+          if [ -f Backend/test-results/results.xml ]; then
+            echo "Uploading actual test results"
+            mkdir -p temp-artifact && cp Backend/test-results/results.xml temp-artifact/
+          else
+            echo "No test results found; uploading placeholder"
+            mkdir -p temp-artifact && echo "No results generated" > temp-artifact/placeholder.txt
+          fi
+        shell: bash
+
+      - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: test-results-${{ matrix.node-version }}
-          path: Backend/test-results/results.xml
-
-
-# this is just a   random comment..........                               
+          path: temp-artifact
