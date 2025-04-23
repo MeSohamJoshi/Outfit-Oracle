@@ -70,6 +70,9 @@ describe("User Data Functions", () => {
       .toThrow("User already exists");
   });
 
+
+
+  
   test("createUser - should throw error on invalid email", async () => {
     userData.createUser.mockRejectedValue(new Error("Invalid email format"));
 
