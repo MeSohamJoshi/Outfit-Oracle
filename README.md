@@ -1,5 +1,6 @@
 # Outfit-Oracle
 [![Backend Tests](https://github.com/MeSohamJoshi/Outfit-Oracle/actions/workflows/test.yml/badge.svg)](https://github.com/MeSohamJoshi/Outfit-Oracle/actions/workflows/test.yml)
+
 Intelligent Wardrobe Manager keeps track of outfits and advises on what to wear.
 
 - Outfit Oracle is an intelligent wardrobe management system that helps users organize their clothes, keeps track of outfit history, and makes AI-powered recommendations based on past fashion choices, events, and weather conditions. This project brings together data analytics, machine learning, and cloud storage into one seamless and intuitive experience.
