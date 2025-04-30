@@ -2,39 +2,38 @@ import { Router } from "express";
 const router = Router();
 import { wardrobeData } from "../data/index.js";
 
-router
-  .route("/")
-  // .get(async (req, res) => {
-  //   try {
-  //     const userId = req.params.id; // Expecting userId as a query parameter
-  //     if (!userId) {
-  //       return res.status(400)  1.json({ error: "User ID is required" });
-  //     }
-  //     const wardrobeItems = await wardrobeData.getAllWardrobeItems(userId);
-  //     res.status(200).json(wardrobeItems);
-  //   } catch (error) {
-  //     res.status(500).json({ error: error.message });
-  //   }
-  // })
-  .post(async (req, res) => {
-    try {
-      const { userId, category, name, image } = req.body;
-      if (!userId || !category || !name || !image) {
-        return res.status(400).json({
-          error: "All fields (userId, category, name, image) are required",
-        });
-      }
-      const newWardrobeItem = await wardrobeData.createWardrobeItem(
-        userId,
-        category,
-        name,
-        image
-      );
-      res.status(201).json(newWardrobeItem);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+router.route("/").post(async (req, res) => {
+  try {
+    const { userId, category, name, image } = req.body;
+    if (!userId || !category || !name || !image) {
+      return res.status(400).json({
+        error: "All fields (userId, category, name, image) are required",
+      });
     }
-  });
+    const newWardrobeItem = await wardrobeData.createWardrobeItem(
+      userId,
+      category,
+      name,
+      image
+    );
+    res.status(201).json(newWardrobeItem);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.route("/:userId").get(async (req, res) => {
+  try {
+    const userId = req.params.userId; // Expecting userId as a query parameter
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
+    }
+    const wardrobeItems = await wardrobeData.getAllWardrobeItems(userId);
+    res.status(200).json(wardrobeItems);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 router
   .route("/:id")

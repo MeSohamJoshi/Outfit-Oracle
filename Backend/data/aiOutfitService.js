@@ -58,7 +58,7 @@ Return only JSON format:
       {
         role: "assistant",
         content:
-          "You are an smart outfit agent who suggests outfits based on users thier wadrobe items, looking at weather conditions and what fits best",
+          "You are an smart outfit agent who suggests outfits based on users thier wadrobe items, looking at weather conditions and what fits best return the exact names",
       },
       {
         role: "user",

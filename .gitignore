@@ -3,4 +3,3 @@ Backend/package-lock.json
 **/node_modules/
 # Ignore all .env files
 .env
-

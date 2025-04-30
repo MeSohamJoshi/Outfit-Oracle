@@ -8,7 +8,7 @@ router.route("/ai-generate").post(async (req, res) => {
   try {
     const { userId, location } = req.body;
     const outfits = await generateAIOutfit(userId, location);
-    return res.consstatus(201).json(outfits);
+    return res.status(201).json(outfits);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
